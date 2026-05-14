@@ -1,3 +1,0 @@
-﻿<Project>
-  <Import Project="../build/SmartCalendar.Api.props" />
-</Project>
