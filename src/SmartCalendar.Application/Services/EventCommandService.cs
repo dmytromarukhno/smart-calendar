@@ -43,9 +43,9 @@ public sealed class EventCommandService
 
     public async Task AttachSceneAsync(Guid eventId, Guid sceneId, CancellationToken ct = default)
     {
-        var @event = await GetEventOrThrowAsync(eventId, ct);
+        await GetEventOrThrowAsync(eventId, ct);
         var schedule = new Schedule(eventId, sceneId, ReminderDefaults.SceneTriggerOffsetMinutes);
-        @event.AddSchedule(schedule);
+        await _events.AddScheduleAsync(schedule, ct);
         await _uow.SaveChangesAsync(ct);
     }
 

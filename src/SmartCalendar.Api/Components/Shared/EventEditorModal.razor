@@ -1,11 +1,11 @@
 @inject HttpClient Http
 
-<div class="sc-backdrop" @onclick="OnCancelled.InvokeAsync"></div>
+<div class="sc-backdrop" @onclick="() => OnCancelled.InvokeAsync()"></div>
 
 <div class="sc-modal" @onclick:stopPropagation role="dialog" aria-modal="true">
     <div class="sc-modal-header">
         <h5 class="mb-0">@(_isNew ? "Нова подія" : "Редагування події")</h5>
-        <button type="button" class="btn-close" @onclick="OnCancelled.InvokeAsync"
+        <button type="button" class="btn-close" @onclick="() => OnCancelled.InvokeAsync()"
                 aria-label="Закрити"></button>
     </div>
 
@@ -97,7 +97,7 @@
 
     <div class="sc-modal-footer">
         <button type="button" class="btn btn-outline-secondary"
-                @onclick="OnCancelled.InvokeAsync">Скасувати</button>
+                @onclick="() => OnCancelled.InvokeAsync()">Скасувати</button>
         <button type="button" class="btn btn-primary" @onclick="SaveAsync"
                 disabled="@_saving">
             @if (_saving)

@@ -11,4 +11,5 @@ public interface IEventRepository
     Task AddAsync(Event @event, CancellationToken ct = default);
     Task UpdateAsync(Event @event, CancellationToken ct = default);
     Task DeleteAsync(Guid id, CancellationToken ct = default);
+    Task AddScheduleAsync(Schedule schedule, CancellationToken ct = default);
 }

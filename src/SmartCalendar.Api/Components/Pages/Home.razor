@@ -1,4 +1,6 @@
-@page "/"
+@page "/home"
+@inject NavigationManager Nav
 
-<h1>Smart Home Calendar</h1>
-<p>Welcome. Navigate to <a href="/calendar">Calendar</a> to manage events.</p>
+@code {
+    protected override void OnInitialized() => Nav.NavigateTo("/", forceLoad: false);
+}

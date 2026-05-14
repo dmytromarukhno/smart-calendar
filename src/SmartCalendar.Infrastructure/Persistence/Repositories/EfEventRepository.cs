@@ -52,4 +52,7 @@ public sealed class EfEventRepository : IEventRepository
         if (@event is not null)
             _db.Events.Remove(@event);
     }
+
+    public async Task AddScheduleAsync(Schedule schedule, CancellationToken ct = default) =>
+        await _db.Schedules.AddAsync(schedule, ct);
 }
