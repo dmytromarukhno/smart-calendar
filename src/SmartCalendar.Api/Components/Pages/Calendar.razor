@@ -1,0 +1,238 @@
+@page "/"
+@rendermode InteractiveServer
+@inject HttpClient Http
+
+<PageTitle>Календар для розумного будинку</PageTitle>
+
+<div class="sc-layout">
+
+    @* ─── SIDEBAR ─── *@
+    <aside class="sc-sidebar">
+        <div class="sc-sidebar-brand">🏠 Smart Home</div>
+
+        <div class="sc-sidebar-section">
+            <div class="sc-sidebar-label">ПРИСТРОЇ</div>
+            @if (_devices is null)
+            {
+                <div class="sc-loading">Завантаження…</div>
+            }
+            else
+            {
+                @foreach (var d in _devices)
+                {
+                    <div class="sc-device-row">
+                        <span class="sc-dot @(d.IsOnline ? "sc-dot-on" : "sc-dot-off")"></span>
+                        <span class="sc-device-name" title="@d.Location">@d.Name</span>
+                    </div>
+                }
+            }
+        </div>
+
+        <div class="sc-sidebar-section">
+            <div class="sc-sidebar-label">СЦЕНИ</div>
+            @if (_scenes is null)
+            {
+                <div class="sc-loading">Завантаження…</div>
+            }
+            else if (!_scenes.Any())
+            {
+                <div class="sc-muted">Немає сцен</div>
+            }
+            else
+            {
+                @foreach (var s in _scenes)
+                {
+                    <div class="sc-scene-row">
+                        <span class="sc-scene-icon">⚡</span>@s.Name
+                    </div>
+                }
+            }
+        </div>
+    </aside>
+
+    @* ─── MAIN AREA ─── *@
+    <div class="sc-main">
+
+        @* Header *@
+        <div class="sc-header">
+            <div class="sc-header-left">
+                <div class="sc-app-title">Календар для розумного будинку</div>
+                <div class="sc-month-nav">
+                    <button class="btn btn-outline-secondary btn-sm sc-nav-btn"
+                            @onclick="PrevMonthAsync" title="Попередній місяць">‹</button>
+                    <span class="sc-month-label">@_monthLabel</span>
+                    <button class="btn btn-outline-secondary btn-sm sc-nav-btn"
+                            @onclick="NextMonthAsync" title="Наступний місяць">›</button>
+                </div>
+            </div>
+            <button class="btn btn-primary"
+                    @onclick='() => OpenEditor(null, DateTime.Today)'>
+                + Подія
+            </button>
+        </div>
+
+        @* Calendar grid *@
+        <div class="sc-grid-wrap">
+            <div class="sc-grid">
+                @* Day-of-week headers *@
+                @foreach (var h in DayHeaders)
+                {
+                    <div class="sc-dh">@h</div>
+                }
+
+                @* Day cells *@
+                @foreach (var cell in _cells)
+                {
+                    <div class="sc-cell @(cell.IsCurrentMonth ? "" : "sc-other-month")
+                                        @(cell.IsToday ? "sc-today" : "")"
+                         @onclick="() => OpenEditor(null, cell.Date)">
+
+                        <div class="sc-cell-num">@cell.Date.Day</div>
+
+                        @foreach (var ev in cell.Events)
+                        {
+                            <div class="sc-pill @(ev.HasScene ? "sc-pill-scene" : "sc-pill-regular")"
+                                 title="@ev.Title @ev.StartTime.ToString("HH:mm")"
+                                 @onclick:stopPropagation
+                                 @onclick="() => OpenEditor(ev, cell.Date)">
+                                @Clip(ev.Title) @ev.StartTime.ToString("HH:mm")
+                            </div>
+                        }
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+@* ─── MODAL ─── *@
+@if (_showEditor)
+{
+    <EventEditorModal EditingEvent="_editingEvent"
+                      DefaultDate="_editorDate"
+                      Scenes="@(_scenes ?? [])"
+                      OnSaved="HandleSavedAsync"
+                      OnCancelled="CloseEditor" />
+}
+
+@code {
+    // ── Constants ────────────────────────────────────────────
+    private static readonly string[] DayHeaders = ["Пн", "Вт", "Ср", "Чт", "Пт", "Сб", "Нд"];
+    private static readonly CultureInfo Ukrainian = new("uk-UA");
+
+    // ── State ────────────────────────────────────────────────
+    private int _year  = DateTime.Today.Year;
+    private int _month = DateTime.Today.Month;
+    private string _monthLabel = "";
+
+    private List<CalendarCell> _cells  = [];
+    private List<EventDto>?    _events;
+    private List<DeviceDto>?   _devices;
+    private List<SceneDto>?    _scenes;
+
+    private bool      _showEditor;
+    private EventDto? _editingEvent;
+    private DateTime  _editorDate = DateTime.Today;
+
+    // ── Lifecycle ────────────────────────────────────────────
+    protected override async Task OnInitializedAsync()
+    {
+        await Task.WhenAll(LoadDevicesAsync(), LoadScenesAsync());
+        await RefreshAsync();
+    }
+
+    // ── Data loading ─────────────────────────────────────────
+    private async Task LoadDevicesAsync()
+    {
+        try   { _devices = await Http.GetFromJsonAsync<List<DeviceDto>>("/api/devices"); }
+        catch { _devices = []; }
+    }
+
+    private async Task LoadScenesAsync()
+    {
+        try   { _scenes = await Http.GetFromJsonAsync<List<SceneDto>>("/api/scenes"); }
+        catch { _scenes = []; }
+    }
+
+    private async Task RefreshAsync()
+    {
+        _monthLabel = new DateTime(_year, _month, 1)
+            .ToString("MMMM yyyy", Ukrainian);
+
+        var from = new DateTime(_year, _month, 1);
+        var to   = new DateTime(_year, _month, DateTime.DaysInMonth(_year, _month));
+
+        try
+        {
+            _events = await Http.GetFromJsonAsync<List<EventDto>>(
+                $"/api/events?from={from:yyyy-MM-dd}&to={to:yyyy-MM-dd}");
+        }
+        catch { _events = []; }
+
+        _cells = BuildGrid();
+    }
+
+    // ── Grid builder ─────────────────────────────────────────
+    private List<CalendarCell> BuildGrid()
+    {
+        var cells  = new List<CalendarCell>(42);
+        var first  = new DateTime(_year, _month, 1);
+        var offset = ((int)first.DayOfWeek + 6) % 7; // Mon-first offset
+
+        for (var i = 0; i < 42; i++)
+        {
+            var date   = first.AddDays(i - offset);
+            var events = _events?
+                .Where(e => e.StartTime.Date == date.Date)
+                .OrderBy(e => e.StartTime)
+                .ToList() ?? [];
+
+            cells.Add(new CalendarCell(
+                date,
+                date.Month == _month,
+                date.Date == DateTime.Today.Date,
+                events));
+        }
+        return cells;
+    }
+
+    // ── Navigation ───────────────────────────────────────────
+    private async Task PrevMonthAsync()
+    {
+        var d = new DateTime(_year, _month, 1).AddMonths(-1);
+        (_year, _month) = (d.Year, d.Month);
+        await RefreshAsync();
+    }
+
+    private async Task NextMonthAsync()
+    {
+        var d = new DateTime(_year, _month, 1).AddMonths(1);
+        (_year, _month) = (d.Year, d.Month);
+        await RefreshAsync();
+    }
+
+    // ── Modal control ────────────────────────────────────────
+    private void OpenEditor(EventDto? ev, DateTime date)
+    {
+        _editingEvent = ev;
+        _editorDate   = date;
+        _showEditor   = true;
+    }
+
+    private void CloseEditor() => _showEditor = false;
+
+    private async Task HandleSavedAsync()
+    {
+        _showEditor = false;
+        await RefreshAsync();
+    }
+
+    // ── Helpers ──────────────────────────────────────────────
+    private static string Clip(string s) => s.Length > 10 ? s[..9] + "…" : s;
+
+    private sealed record CalendarCell(
+        DateTime Date,
+        bool IsCurrentMonth,
+        bool IsToday,
+        List<EventDto> Events);
+}

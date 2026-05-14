@@ -1,0 +1,42 @@
+@page "/events/new"
+@using SmartCalendar.Application.Dtos
+@using SmartCalendar.Application.Services
+@inject EventCommandService CommandService
+@inject NavigationManager Nav
+
+<h1>New Event</h1>
+
+<EditForm Model="_model" OnValidSubmit="SaveAsync">
+    <DataAnnotationsValidator />
+    <div>
+        <label>Title</label>
+        <InputText @bind-Value="_model.Title" />
+    </div>
+    <div>
+        <label>Start</label>
+        <InputDate Type="InputDateType.DateTimeLocal" @bind-Value="_model.Start" />
+    </div>
+    <div>
+        <label>End</label>
+        <InputDate Type="InputDateType.DateTimeLocal" @bind-Value="_model.End" />
+    </div>
+    <button type="submit">Save</button>
+</EditForm>
+
+@code {
+    private readonly EventFormModel _model = new();
+
+    private async Task SaveAsync()
+    {
+        var dto = new CreateEventDto(_model.Title, _model.Start, _model.End);
+        await CommandService.CreateAsync(dto);
+        Nav.NavigateTo("/calendar");
+    }
+
+    private sealed class EventFormModel
+    {
+        public string Title { get; set; } = string.Empty;
+        public DateTime Start { get; set; } = DateTime.Now;
+        public DateTime End { get; set; } = DateTime.Now.AddHours(1);
+    }
+}

@@ -1,0 +1,29 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(dotnet --version)",
+      "Bash(dotnet sdk:*)",
+      "Bash(dotnet new sln:*)",
+      "Bash(mkdir -p src)",
+      "Bash(dotnet new:*)",
+      "Bash(dotnet sln add:*)",
+      "Bash(dotnet add:*)",
+      "Bash(dotnet build:*)",
+      "Bash(dotnet ef:*)",
+      "Bash(dotnet tool install:*)",
+      "Bash(export PATH=\"$PATH:/home/dmytro/.dotnet/tools\")",
+      "Bash(export ASPNETCORE_ENVIRONMENT=Development)",
+      "Bash(dotnet run:*)",
+      "Bash(echo \"PID=$!\")",
+      "Bash(kill 7771)",
+      "Bash(break)",
+      "Bash(curl -s http://localhost:5123/swagger/v1/swagger.json)",
+      "Bash(python3 -c ':*)",
+      "Bash(sqlite3 smart-calendar.db \"SELECT Id, Name, Location, IsOnline FROM Devices ORDER BY Name;\")",
+      "Bash(sqlite3 /home/dmytro/projects/smart-calendar/smart-calendar.db \"SELECT Id, Name, Location, IsOnline FROM Devices ORDER BY Name;\")",
+      "Bash(python3:*)",
+      "Bash(pkill -f \"SmartCalendar.Api.dll\")",
+      "Bash(dotnet test:*)"
+    ]
+  }
+}

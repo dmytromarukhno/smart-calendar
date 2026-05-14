@@ -1,0 +1,11 @@
+{
+  "version": 2,
+  "dgSpecHash": "/yXnf2IVinrJ0RTrhDEugw4LGDV9m9TpniqP8z62g9yQYA91R6mRf2g+VDyrougyr6mm7KjynSMltQE8X3H+6w==",
+  "success": true,
+  "projectFilePath": "/home/dmytro/projects/smart-calendar/src/SmartCalendar.Application/SmartCalendar.Application.csproj",
+  "expectedPackageFiles": [
+    "/home/dmytro/.nuget/packages/microsoft.extensions.dependencyinjection.abstractions/8.0.0/microsoft.extensions.dependencyinjection.abstractions.8.0.0.nupkg.sha512",
+    "/home/dmytro/.nuget/packages/microsoft.extensions.logging.abstractions/8.0.0/microsoft.extensions.logging.abstractions.8.0.0.nupkg.sha512"
+  ],
+  "logs": []
+}

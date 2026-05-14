@@ -1,0 +1,6 @@
+{
+  "SmartCalendar.Api, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null": "\/home\/dmytro\/projects\/smart-calendar\/src\/SmartCalendar.Api",
+  "SmartCalendar.Application, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null": "\/home\/dmytro\/projects\/smart-calendar\/src\/SmartCalendar.Application",
+  "SmartCalendar.Domain, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null": "\/home\/dmytro\/projects\/smart-calendar\/src\/SmartCalendar.Domain",
+  "SmartCalendar.Infrastructure, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null": "\/home\/dmytro\/projects\/smart-calendar\/src\/SmartCalendar.Infrastructure"
+}

@@ -1,0 +1,238 @@
+@inject HttpClient Http
+
+<div class="sc-backdrop" @onclick="OnCancelled.InvokeAsync"></div>
+
+<div class="sc-modal" @onclick:stopPropagation role="dialog" aria-modal="true">
+    <div class="sc-modal-header">
+        <h5 class="mb-0">@(_isNew ? "Нова подія" : "Редагування події")</h5>
+        <button type="button" class="btn-close" @onclick="OnCancelled.InvokeAsync"
+                aria-label="Закрити"></button>
+    </div>
+
+    <div class="sc-modal-body">
+        @* Title *@
+        <div class="mb-3">
+            <label class="form-label fw-semibold">Назва</label>
+            <input class="form-control @(_titleError ? "is-invalid" : "")"
+                   @bind="_title" placeholder="Наприклад: Кіно 21:00" />
+            @if (_titleError)
+            {
+                <div class="invalid-feedback">Назва обов'язкова</div>
+            }
+        </div>
+
+        @* Times *@
+        <div class="row g-3 mb-3">
+            <div class="col-6">
+                <label class="form-label fw-semibold">Початок</label>
+                <input type="datetime-local" class="form-control" @bind="_start" />
+            </div>
+            <div class="col-6">
+                <label class="form-label fw-semibold">Кінець</label>
+                <input type="datetime-local" class="form-control
+                       @(_timeError ? "is-invalid" : "")" @bind="_end" />
+                @if (_timeError)
+                {
+                    <div class="invalid-feedback">Кінець має бути пізніше початку</div>
+                }
+            </div>
+        </div>
+
+        @* Recurring *@
+        <div class="mb-3 form-check">
+            <input type="checkbox" class="form-check-input" id="chkRecurring"
+                   @bind="_isRecurring" />
+            <label class="form-check-label" for="chkRecurring">Повторювана подія</label>
+        </div>
+        @if (_isRecurring)
+        {
+            <div class="mb-3">
+                <label class="form-label fw-semibold">Розклад (RRULE)</label>
+                <input class="form-control" @bind="_recurrencePattern"
+                       placeholder="FREQ=WEEKLY;BYDAY=TU,SA" />
+            </div>
+        }
+
+        @* Reminders *@
+        <div class="mb-3">
+            <label class="form-label fw-semibold">Нагадування</label>
+            <div class="d-flex flex-wrap gap-2 align-items-center">
+                @foreach (var offset in _reminderOffsets.ToList())
+                {
+                    <span class="badge rounded-pill sc-reminder-pill">
+                        за @offset хв
+                        <button class="sc-pill-remove" @onclick="() => _reminderOffsets.Remove(offset)"
+                                type="button" aria-label="Видалити">×</button>
+                    </span>
+                }
+                <button type="button" class="btn btn-outline-secondary btn-sm rounded-pill px-3"
+                        @onclick="AddReminder">+ додати</button>
+            </div>
+        </div>
+
+        @* Scene *@
+        <div class="mb-3">
+            <label class="form-label fw-semibold">Прив'язана сцена</label>
+            @if (!Scenes.Any())
+            {
+                <div class="text-muted small">Немає доступних сцен. Спочатку створіть сцену.</div>
+            }
+            else
+            {
+                <select class="form-select" @bind="_selectedSceneId">
+                    <option value="">— без сцени —</option>
+                    @foreach (var s in Scenes)
+                    {
+                        <option value="@s.Id">@s.Name</option>
+                    }
+                </select>
+            }
+        </div>
+
+        @if (!string.IsNullOrEmpty(_errorMessage))
+        {
+            <div class="alert alert-danger py-2 mb-0">@_errorMessage</div>
+        }
+    </div>
+
+    <div class="sc-modal-footer">
+        <button type="button" class="btn btn-outline-secondary"
+                @onclick="OnCancelled.InvokeAsync">Скасувати</button>
+        <button type="button" class="btn btn-primary" @onclick="SaveAsync"
+                disabled="@_saving">
+            @if (_saving)
+            {
+                <span class="spinner-border spinner-border-sm me-1" role="status"></span>
+            }
+            @(_saving ? "Збереження…" : "Зберегти")
+        </button>
+    </div>
+</div>
+
+@code {
+    [Parameter] public EventDto? EditingEvent { get; set; }
+    [Parameter] public DateTime DefaultDate { get; set; } = DateTime.Today;
+    [Parameter] public List<SceneDto> Scenes { get; set; } = [];
+    [Parameter] public EventCallback OnSaved { get; set; }
+    [Parameter] public EventCallback OnCancelled { get; set; }
+
+    private bool _isNew;
+    private string _title = "";
+    private DateTime _start;
+    private DateTime _end;
+    private bool _isRecurring;
+    private string _recurrencePattern = "";
+    private List<int> _reminderOffsets = [];
+    private string _selectedSceneId = "";
+    private bool _saving;
+    private string _errorMessage = "";
+    private bool _titleError;
+    private bool _timeError;
+
+    // Available offsets to cycle through when "+ додати" pressed
+    private static readonly int[] DefaultOffsets =
+        [ReminderDefaults.FirstWarningMinutes, ReminderDefaults.FinalWarningMinutes, 30, 60];
+
+    protected override void OnParametersSet()
+    {
+        _isNew = EditingEvent is null;
+        ResetForm();
+        _errorMessage = "";
+        _titleError = false;
+        _timeError = false;
+    }
+
+    private void ResetForm()
+    {
+        if (_isNew)
+        {
+            _title = "";
+            _start = DefaultDate.Date.AddHours(12);
+            _end = DefaultDate.Date.AddHours(13);
+            _isRecurring = false;
+            _recurrencePattern = "";
+            _reminderOffsets = [ReminderDefaults.FirstWarningMinutes, ReminderDefaults.FinalWarningMinutes];
+            _selectedSceneId = "";
+        }
+        else
+        {
+            _title = EditingEvent!.Title;
+            _start = EditingEvent.StartTime;
+            _end = EditingEvent.EndTime;
+            _isRecurring = EditingEvent.IsRecurring;
+            _recurrencePattern = EditingEvent.RecurrencePattern;
+            _reminderOffsets = [];
+            _selectedSceneId = "";
+        }
+    }
+
+    private void AddReminder()
+    {
+        var next = DefaultOffsets.FirstOrDefault(o => !_reminderOffsets.Contains(o), 30);
+        _reminderOffsets.Add(next);
+    }
+
+    private async Task SaveAsync()
+    {
+        _titleError = string.IsNullOrWhiteSpace(_title);
+        _timeError = _end <= _start;
+        if (_titleError || _timeError) return;
+
+        _saving = true;
+        _errorMessage = "";
+        try
+        {
+            var id = await UpsertEventAsync();
+            await SendRemindersAsync(id);
+            await AttachSceneAsync(id);
+            await OnSaved.InvokeAsync();
+        }
+        catch (Exception ex)
+        {
+            _errorMessage = ex.Message;
+        }
+        finally
+        {
+            _saving = false;
+        }
+    }
+
+    private async Task<Guid> UpsertEventAsync()
+    {
+        if (_isNew)
+        {
+            var dto = new CreateEventDto(_title, _start, _end);
+            var resp = await Http.PostAsJsonAsync("/api/events", dto);
+            resp.EnsureSuccessStatusCode();
+            var body = await resp.Content.ReadFromJsonAsync<IdBody>()
+                       ?? throw new InvalidOperationException("Empty response from server");
+            return body.Id;
+        }
+        else
+        {
+            var dto = new UpdateEventDto(EditingEvent!.Id, _title, _start, _end,
+                _isRecurring, _recurrencePattern, 0);
+            var resp = await Http.PutAsJsonAsync($"/api/events/{EditingEvent.Id}", dto);
+            resp.EnsureSuccessStatusCode();
+            return EditingEvent.Id;
+        }
+    }
+
+    private async Task SendRemindersAsync(Guid eventId)
+    {
+        foreach (var offset in _reminderOffsets)
+        {
+            var dto = new UpdateEventDto(eventId, _title, _start, _end,
+                _isRecurring, _recurrencePattern, offset);
+            await Http.PutAsJsonAsync($"/api/events/{eventId}", dto);
+        }
+    }
+
+    private async Task AttachSceneAsync(Guid eventId)
+    {
+        if (Guid.TryParse(_selectedSceneId, out var sceneId))
+            await Http.PostAsync($"/api/events/{eventId}/scenes/{sceneId}", null);
+    }
+
+    private sealed record IdBody(Guid Id);
+}

@@ -1,0 +1,408 @@
+{
+  "format": 1,
+  "restore": {
+    "/home/dmytro/projects/smart-calendar/src/SmartCalendar.Tests/SmartCalendar.Tests.csproj": {}
+  },
+  "projects": {
+    "/home/dmytro/projects/smart-calendar/src/SmartCalendar.Api/SmartCalendar.Api.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "/home/dmytro/projects/smart-calendar/src/SmartCalendar.Api/SmartCalendar.Api.csproj",
+        "projectName": "SmartCalendar.Api",
+        "projectPath": "/home/dmytro/projects/smart-calendar/src/SmartCalendar.Api/SmartCalendar.Api.csproj",
+        "packagesPath": "/home/dmytro/.nuget/packages/",
+        "outputPath": "/home/dmytro/projects/smart-calendar/src/SmartCalendar.Api/obj/",
+        "projectStyle": "PackageReference",
+        "configFilePaths": [
+          "/home/dmytro/.nuget/NuGet/NuGet.Config"
+        ],
+        "originalTargetFrameworks": [
+          "net8.0"
+        ],
+        "sources": {
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "net8.0": {
+            "targetAlias": "net8.0",
+            "projectReferences": {
+              "/home/dmytro/projects/smart-calendar/src/SmartCalendar.Application/SmartCalendar.Application.csproj": {
+                "projectPath": "/home/dmytro/projects/smart-calendar/src/SmartCalendar.Application/SmartCalendar.Application.csproj"
+              },
+              "/home/dmytro/projects/smart-calendar/src/SmartCalendar.Infrastructure/SmartCalendar.Infrastructure.csproj": {
+                "projectPath": "/home/dmytro/projects/smart-calendar/src/SmartCalendar.Infrastructure/SmartCalendar.Infrastructure.csproj"
+              }
+            }
+          }
+        },
+        "warningProperties": {
+          "allWarningsAsErrors": true,
+          "warnAsError": [
+            "NU1605"
+          ]
+        }
+      },
+      "frameworks": {
+        "net8.0": {
+          "targetAlias": "net8.0",
+          "dependencies": {
+            "Microsoft.AspNetCore.Components.Web": {
+              "target": "Package",
+              "version": "[8.0.0, )"
+            },
+            "Microsoft.AspNetCore.OpenApi": {
+              "target": "Package",
+              "version": "[8.0.0, )"
+            },
+            "Microsoft.EntityFrameworkCore.Design": {
+              "include": "Runtime, Build, Native, ContentFiles, Analyzers, BuildTransitive",
+              "suppressParent": "All",
+              "target": "Package",
+              "version": "[8.0.0, )"
+            },
+            "Serilog.AspNetCore": {
+              "target": "Package",
+              "version": "[8.0.0, )"
+            },
+            "Serilog.Sinks.Console": {
+              "target": "Package",
+              "version": "[5.0.1, )"
+            },
+            "Swashbuckle.AspNetCore": {
+              "target": "Package",
+              "version": "[6.5.0, )"
+            }
+          },
+          "imports": [
+            "net461",
+            "net462",
+            "net47",
+            "net471",
+            "net472",
+            "net48",
+            "net481"
+          ],
+          "assetTargetFallback": true,
+          "warn": true,
+          "frameworkReferences": {
+            "Microsoft.AspNetCore.App": {
+              "privateAssets": "none"
+            },
+            "Microsoft.NETCore.App": {
+              "privateAssets": "all"
+            }
+          },
+          "runtimeIdentifierGraphPath": "/usr/lib/dotnet/sdk/8.0.126/PortableRuntimeIdentifierGraph.json"
+        }
+      }
+    },
+    "/home/dmytro/projects/smart-calendar/src/SmartCalendar.Application/SmartCalendar.Application.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "/home/dmytro/projects/smart-calendar/src/SmartCalendar.Application/SmartCalendar.Application.csproj",
+        "projectName": "SmartCalendar.Application",
+        "projectPath": "/home/dmytro/projects/smart-calendar/src/SmartCalendar.Application/SmartCalendar.Application.csproj",
+        "packagesPath": "/home/dmytro/.nuget/packages/",
+        "outputPath": "/home/dmytro/projects/smart-calendar/src/SmartCalendar.Application/obj/",
+        "projectStyle": "PackageReference",
+        "configFilePaths": [
+          "/home/dmytro/.nuget/NuGet/NuGet.Config"
+        ],
+        "originalTargetFrameworks": [
+          "net8.0"
+        ],
+        "sources": {
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "net8.0": {
+            "targetAlias": "net8.0",
+            "projectReferences": {
+              "/home/dmytro/projects/smart-calendar/src/SmartCalendar.Domain/SmartCalendar.Domain.csproj": {
+                "projectPath": "/home/dmytro/projects/smart-calendar/src/SmartCalendar.Domain/SmartCalendar.Domain.csproj"
+              }
+            }
+          }
+        },
+        "warningProperties": {
+          "allWarningsAsErrors": true,
+          "warnAsError": [
+            "NU1605"
+          ]
+        }
+      },
+      "frameworks": {
+        "net8.0": {
+          "targetAlias": "net8.0",
+          "dependencies": {
+            "Microsoft.Extensions.DependencyInjection.Abstractions": {
+              "target": "Package",
+              "version": "[8.0.0, )"
+            },
+            "Microsoft.Extensions.Logging.Abstractions": {
+              "target": "Package",
+              "version": "[8.0.0, )"
+            }
+          },
+          "imports": [
+            "net461",
+            "net462",
+            "net47",
+            "net471",
+            "net472",
+            "net48",
+            "net481"
+          ],
+          "assetTargetFallback": true,
+          "warn": true,
+          "frameworkReferences": {
+            "Microsoft.NETCore.App": {
+              "privateAssets": "all"
+            }
+          },
+          "runtimeIdentifierGraphPath": "/usr/lib/dotnet/sdk/8.0.126/PortableRuntimeIdentifierGraph.json"
+        }
+      }
+    },
+    "/home/dmytro/projects/smart-calendar/src/SmartCalendar.Domain/SmartCalendar.Domain.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "/home/dmytro/projects/smart-calendar/src/SmartCalendar.Domain/SmartCalendar.Domain.csproj",
+        "projectName": "SmartCalendar.Domain",
+        "projectPath": "/home/dmytro/projects/smart-calendar/src/SmartCalendar.Domain/SmartCalendar.Domain.csproj",
+        "packagesPath": "/home/dmytro/.nuget/packages/",
+        "outputPath": "/home/dmytro/projects/smart-calendar/src/SmartCalendar.Domain/obj/",
+        "projectStyle": "PackageReference",
+        "configFilePaths": [
+          "/home/dmytro/.nuget/NuGet/NuGet.Config"
+        ],
+        "originalTargetFrameworks": [
+          "net8.0"
+        ],
+        "sources": {
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "net8.0": {
+            "targetAlias": "net8.0",
+            "projectReferences": {}
+          }
+        },
+        "warningProperties": {
+          "allWarningsAsErrors": true,
+          "warnAsError": [
+            "NU1605"
+          ]
+        }
+      },
+      "frameworks": {
+        "net8.0": {
+          "targetAlias": "net8.0",
+          "imports": [
+            "net461",
+            "net462",
+            "net47",
+            "net471",
+            "net472",
+            "net48",
+            "net481"
+          ],
+          "assetTargetFallback": true,
+          "warn": true,
+          "frameworkReferences": {
+            "Microsoft.NETCore.App": {
+              "privateAssets": "all"
+            }
+          },
+          "runtimeIdentifierGraphPath": "/usr/lib/dotnet/sdk/8.0.126/PortableRuntimeIdentifierGraph.json"
+        }
+      }
+    },
+    "/home/dmytro/projects/smart-calendar/src/SmartCalendar.Infrastructure/SmartCalendar.Infrastructure.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "/home/dmytro/projects/smart-calendar/src/SmartCalendar.Infrastructure/SmartCalendar.Infrastructure.csproj",
+        "projectName": "SmartCalendar.Infrastructure",
+        "projectPath": "/home/dmytro/projects/smart-calendar/src/SmartCalendar.Infrastructure/SmartCalendar.Infrastructure.csproj",
+        "packagesPath": "/home/dmytro/.nuget/packages/",
+        "outputPath": "/home/dmytro/projects/smart-calendar/src/SmartCalendar.Infrastructure/obj/",
+        "projectStyle": "PackageReference",
+        "configFilePaths": [
+          "/home/dmytro/.nuget/NuGet/NuGet.Config"
+        ],
+        "originalTargetFrameworks": [
+          "net8.0"
+        ],
+        "sources": {
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "net8.0": {
+            "targetAlias": "net8.0",
+            "projectReferences": {
+              "/home/dmytro/projects/smart-calendar/src/SmartCalendar.Application/SmartCalendar.Application.csproj": {
+                "projectPath": "/home/dmytro/projects/smart-calendar/src/SmartCalendar.Application/SmartCalendar.Application.csproj"
+              },
+              "/home/dmytro/projects/smart-calendar/src/SmartCalendar.Domain/SmartCalendar.Domain.csproj": {
+                "projectPath": "/home/dmytro/projects/smart-calendar/src/SmartCalendar.Domain/SmartCalendar.Domain.csproj"
+              }
+            }
+          }
+        },
+        "warningProperties": {
+          "allWarningsAsErrors": true,
+          "warnAsError": [
+            "NU1605"
+          ]
+        }
+      },
+      "frameworks": {
+        "net8.0": {
+          "targetAlias": "net8.0",
+          "dependencies": {
+            "Microsoft.EntityFrameworkCore": {
+              "target": "Package",
+              "version": "[8.0.0, )"
+            },
+            "Microsoft.EntityFrameworkCore.Design": {
+              "include": "Runtime, Build, Native, ContentFiles, Analyzers, BuildTransitive",
+              "suppressParent": "All",
+              "target": "Package",
+              "version": "[8.0.0, )"
+            },
+            "Microsoft.EntityFrameworkCore.Sqlite": {
+              "target": "Package",
+              "version": "[8.0.0, )"
+            },
+            "Microsoft.Extensions.Hosting": {
+              "target": "Package",
+              "version": "[8.0.0, )"
+            }
+          },
+          "imports": [
+            "net461",
+            "net462",
+            "net47",
+            "net471",
+            "net472",
+            "net48",
+            "net481"
+          ],
+          "assetTargetFallback": true,
+          "warn": true,
+          "frameworkReferences": {
+            "Microsoft.NETCore.App": {
+              "privateAssets": "all"
+            }
+          },
+          "runtimeIdentifierGraphPath": "/usr/lib/dotnet/sdk/8.0.126/PortableRuntimeIdentifierGraph.json"
+        }
+      }
+    },
+    "/home/dmytro/projects/smart-calendar/src/SmartCalendar.Tests/SmartCalendar.Tests.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "/home/dmytro/projects/smart-calendar/src/SmartCalendar.Tests/SmartCalendar.Tests.csproj",
+        "projectName": "SmartCalendar.Tests",
+        "projectPath": "/home/dmytro/projects/smart-calendar/src/SmartCalendar.Tests/SmartCalendar.Tests.csproj",
+        "packagesPath": "/home/dmytro/.nuget/packages/",
+        "outputPath": "/home/dmytro/projects/smart-calendar/src/SmartCalendar.Tests/obj/",
+        "projectStyle": "PackageReference",
+        "configFilePaths": [
+          "/home/dmytro/.nuget/NuGet/NuGet.Config"
+        ],
+        "originalTargetFrameworks": [
+          "net8.0"
+        ],
+        "sources": {
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "net8.0": {
+            "targetAlias": "net8.0",
+            "projectReferences": {
+              "/home/dmytro/projects/smart-calendar/src/SmartCalendar.Api/SmartCalendar.Api.csproj": {
+                "projectPath": "/home/dmytro/projects/smart-calendar/src/SmartCalendar.Api/SmartCalendar.Api.csproj"
+              },
+              "/home/dmytro/projects/smart-calendar/src/SmartCalendar.Application/SmartCalendar.Application.csproj": {
+                "projectPath": "/home/dmytro/projects/smart-calendar/src/SmartCalendar.Application/SmartCalendar.Application.csproj"
+              },
+              "/home/dmytro/projects/smart-calendar/src/SmartCalendar.Domain/SmartCalendar.Domain.csproj": {
+                "projectPath": "/home/dmytro/projects/smart-calendar/src/SmartCalendar.Domain/SmartCalendar.Domain.csproj"
+              },
+              "/home/dmytro/projects/smart-calendar/src/SmartCalendar.Infrastructure/SmartCalendar.Infrastructure.csproj": {
+                "projectPath": "/home/dmytro/projects/smart-calendar/src/SmartCalendar.Infrastructure/SmartCalendar.Infrastructure.csproj"
+              }
+            }
+          }
+        },
+        "warningProperties": {
+          "allWarningsAsErrors": true,
+          "warnAsError": [
+            "NU1605"
+          ]
+        }
+      },
+      "frameworks": {
+        "net8.0": {
+          "targetAlias": "net8.0",
+          "dependencies": {
+            "FluentAssertions": {
+              "target": "Package",
+              "version": "[6.12.0, )"
+            },
+            "Microsoft.AspNetCore.Mvc.Testing": {
+              "target": "Package",
+              "version": "[8.0.0, )"
+            },
+            "Microsoft.EntityFrameworkCore.InMemory": {
+              "target": "Package",
+              "version": "[8.0.0, )"
+            },
+            "Microsoft.NET.Test.Sdk": {
+              "target": "Package",
+              "version": "[17.6.0, )"
+            },
+            "Moq": {
+              "target": "Package",
+              "version": "[4.20.70, )"
+            },
+            "coverlet.collector": {
+              "include": "Runtime, Build, Native, ContentFiles, Analyzers, BuildTransitive",
+              "suppressParent": "All",
+              "target": "Package",
+              "version": "[6.0.0, )"
+            },
+            "xunit": {
+              "target": "Package",
+              "version": "[2.4.2, )"
+            },
+            "xunit.runner.visualstudio": {
+              "include": "Runtime, Build, Native, ContentFiles, Analyzers, BuildTransitive",
+              "suppressParent": "All",
+              "target": "Package",
+              "version": "[2.4.5, )"
+            }
+          },
+          "imports": [
+            "net461",
+            "net462",
+            "net47",
+            "net471",
+            "net472",
+            "net48",
+            "net481"
+          ],
+          "assetTargetFallback": true,
+          "warn": true,
+          "frameworkReferences": {
+            "Microsoft.NETCore.App": {
+              "privateAssets": "all"
+            }
+          },
+          "runtimeIdentifierGraphPath": "/usr/lib/dotnet/sdk/8.0.126/PortableRuntimeIdentifierGraph.json"
+        }
+      }
+    }
+  }
+}
