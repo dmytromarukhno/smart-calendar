@@ -211,7 +211,7 @@
         else
         {
             var dto = new UpdateEventDto(EditingEvent!.Id, _title, _start, _end,
-                _isRecurring, _recurrencePattern, 0);
+                _isRecurring, _recurrencePattern, _reminderOffsets);
             var resp = await Http.PutAsJsonAsync($"/api/events/{EditingEvent.Id}", dto);
             resp.EnsureSuccessStatusCode();
             return EditingEvent.Id;
@@ -220,12 +220,12 @@
 
     private async Task SendRemindersAsync(Guid eventId)
     {
-        foreach (var offset in _reminderOffsets)
-        {
-            var dto = new UpdateEventDto(eventId, _title, _start, _end,
-                _isRecurring, _recurrencePattern, offset);
-            await Http.PutAsJsonAsync($"/api/events/{eventId}", dto);
-        }
+        // Only for new events: one PUT carries all offsets at once (replace-all semantics)
+        if (!_isNew || _reminderOffsets.Count == 0) return;
+        var dto = new UpdateEventDto(eventId, _title, _start, _end,
+            _isRecurring, _recurrencePattern, _reminderOffsets);
+        var resp = await Http.PutAsJsonAsync($"/api/events/{eventId}", dto);
+        resp.EnsureSuccessStatusCode();
     }
 
     private async Task AttachSceneAsync(Guid eventId)

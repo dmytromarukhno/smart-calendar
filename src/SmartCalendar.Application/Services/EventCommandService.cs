@@ -29,8 +29,7 @@ public sealed class EventCommandService
     {
         var @event = await GetEventOrThrowAsync(dto.Id, ct);
         @event.Update(dto.Title, dto.Start, dto.End, dto.IsRecurring, dto.RecurrencePattern);
-        if (dto.ReminderOffsetMin > 0)
-            @event.AddReminder(dto.ReminderOffsetMin);
+        await _events.ReplaceRemindersAsync(dto.Id, dto.ReminderOffsets, ct);
         await _uow.SaveChangesAsync(ct);
     }
 

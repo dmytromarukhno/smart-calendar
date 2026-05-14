@@ -7,4 +7,4 @@ public sealed record UpdateEventDto(
     DateTime End,
     bool IsRecurring,
     string RecurrencePattern,
-    int ReminderOffsetMin);
+    IReadOnlyList<int> ReminderOffsets);

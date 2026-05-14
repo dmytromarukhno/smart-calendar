@@ -39,6 +39,13 @@ public sealed class Event
         _reminders.Add(new Reminder(Id, offsetMinutes));
     }
 
+    public void ReplaceReminders(IEnumerable<int> offsets)
+    {
+        _reminders.Clear();
+        foreach (var offset in offsets)
+            _reminders.Add(new Reminder(Id, offset));
+    }
+
     public bool IsActiveAt(DateTime dt) =>
         dt >= StartTime && dt <= EndTime;
 

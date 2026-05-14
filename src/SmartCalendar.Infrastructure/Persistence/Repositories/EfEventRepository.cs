@@ -55,4 +55,16 @@ public sealed class EfEventRepository : IEventRepository
 
     public async Task AddScheduleAsync(Schedule schedule, CancellationToken ct = default) =>
         await _db.Schedules.AddAsync(schedule, ct);
+
+    public async Task ReplaceRemindersAsync(Guid eventId, IReadOnlyList<int> offsets, CancellationToken ct = default)
+    {
+        // Bulk delete bypasses the change tracker; old tracked Reminder entities remain
+        // Unchanged in the tracker → SaveChangesAsync generates no SQL for them (correct).
+        await _db.Reminders.Where(r => r.EventId == eventId).ExecuteDeleteAsync(ct);
+
+        // Explicit Add always sets state = Added, regardless of the GUID value.
+        // This avoids EF's navigation-fixup heuristic that marks non-empty-GUID entities as Modified.
+        if (offsets.Count > 0)
+            await _db.Reminders.AddRangeAsync(offsets.Select(o => new Reminder(eventId, o)), ct);
+    }
 }
