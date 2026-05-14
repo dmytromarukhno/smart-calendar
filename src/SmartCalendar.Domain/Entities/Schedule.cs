@@ -7,6 +7,10 @@ public sealed class Schedule
     public Guid SceneId { get; private set; }
     public int TriggerOffsetMin { get; private set; }
     public bool IsEnabled { get; private set; }
+    public DateTime? LastTriggeredAt { get; private set; }
+
+    public Event? Event { get; private set; }
+    public Scene? Scene { get; private set; }
 
     // Required by EF Core
     private Schedule() { }
@@ -22,4 +26,5 @@ public sealed class Schedule
 
     public void Enable() => IsEnabled = true;
     public void Disable() => IsEnabled = false;
+    public void MarkTriggered(DateTime at) => LastTriggeredAt = at;
 }

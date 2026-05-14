@@ -1,6 +1,8 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
+using SmartCalendar.Application.Interfaces;
 using SmartCalendar.Application.Services;
 using SmartCalendar.Domain.Interfaces;
 
@@ -9,31 +11,41 @@ namespace SmartCalendar.Infrastructure.Scheduling;
 public sealed class TimerBasedSceneScheduler : BackgroundService
 {
     private readonly IServiceScopeFactory _scopeFactory;
+    private readonly IClock _clock;
+    private readonly TimeSpan _tickInterval;
     private readonly ILogger<TimerBasedSceneScheduler> _log;
 
-    private static readonly TimeSpan TickInterval = TimeSpan.FromSeconds(30);
-
-    public TimerBasedSceneScheduler(IServiceScopeFactory scopeFactory,
+    public TimerBasedSceneScheduler(
+        IServiceScopeFactory scopeFactory,
+        IClock clock,
+        IOptions<SchedulerOptions> options,
         ILogger<TimerBasedSceneScheduler> log)
     {
         _scopeFactory = scopeFactory;
+        _clock = clock;
+        _tickInterval = options.Value.TickInterval;
         _log = log;
     }
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
-        _log.LogInformation("TimerBasedSceneScheduler started");
+        _log.LogInformation("TimerBasedSceneScheduler started (interval {Interval}s)",
+            (int)_tickInterval.TotalSeconds);
 
-        using var timer = new PeriodicTimer(TickInterval);
+        using var timer = new PeriodicTimer(_tickInterval);
         while (await timer.WaitForNextTickAsync(stoppingToken))
             await TickAsync(stoppingToken);
     }
 
     private async Task TickAsync(CancellationToken ct)
     {
+        var now = _clock.UtcNow;
+        _log.LogInformation("[Scheduler] tick {Time:HH:mm:ss} — checking due schedules",
+            now.ToLocalTime());
+
         await using var scope = _scopeFactory.CreateAsyncScope();
         await DispatchRemindersAsync(scope, ct);
-        await TriggerScheduledScenesAsync(scope, ct);
+        await TriggerDueScenesAsync(scope, now, ct);
     }
 
     private static async Task DispatchRemindersAsync(AsyncServiceScope scope, CancellationToken ct)
@@ -42,25 +54,23 @@ public sealed class TimerBasedSceneScheduler : BackgroundService
         await dispatcher.DispatchPendingAsync(ct);
     }
 
-    private async Task TriggerScheduledScenesAsync(AsyncServiceScope scope, CancellationToken ct)
+    private async Task TriggerDueScenesAsync(AsyncServiceScope scope, DateTime now, CancellationToken ct)
     {
-        var events = scope.ServiceProvider.GetRequiredService<IEventRepository>();
+        var scheduleRepo = scope.ServiceProvider.GetRequiredService<IScheduleRepository>();
         var executor = scope.ServiceProvider.GetRequiredService<SceneExecutor>();
-        var now = DateTime.UtcNow;
 
-        var allEvents = await events.GetAllAsync(ct);
-        foreach (var @event in allEvents)
+        var due = await scheduleRepo.GetDueAsync(now, ct);
+        foreach (var schedule in due)
         {
-            foreach (var schedule in @event.Schedules.Where(s => s.IsEnabled))
-            {
-                var triggerTime = @event.StartTime.AddMinutes(-schedule.TriggerOffsetMin);
-                if (now >= triggerTime && now < triggerTime.AddSeconds(TickInterval.TotalSeconds))
-                {
-                    _log.LogInformation("Triggering scene {SceneId} for event '{Title}'",
-                        schedule.SceneId, @event.Title);
-                    await executor.ExecuteAsync(schedule.SceneId, ct);
-                }
-            }
+            var sceneName = schedule.Scene?.Name ?? schedule.SceneId.ToString("N")[..8];
+            var eventTitle = schedule.Event?.Title ?? schedule.EventId.ToString("N")[..8];
+
+            _log.LogInformation(
+                "[Scheduler] firing scene '{SceneName}' for event '{EventTitle}' (triggers in {Offset} min before start)",
+                sceneName, eventTitle, schedule.TriggerOffsetMin);
+
+            await executor.ExecuteAsync(schedule.SceneId, ct);
+            await scheduleRepo.MarkTriggeredAsync(schedule.Id, now, ct);
         }
     }
 }

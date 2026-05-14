@@ -23,5 +23,11 @@ public static class SeedData
         await db.Devices.AddRangeAsync(devices, ct);
         await db.SaveChangesAsync(ct);
         logger.LogInformation("Seeded {Count} mock devices", devices.Length);
+
+        var kinoScene = new Scene("Кіно");
+        kinoScene.AddCommand(new Command(kinoScene.Id, devices[0], "dim", "20", 1));
+        await db.Scenes.AddAsync(kinoScene, ct);
+        await db.SaveChangesAsync(ct);
+        logger.LogInformation("Seeded demo scene '{Name}' with {Count} command(s)", kinoScene.Name, 1);
     }
 }

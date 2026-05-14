@@ -40,5 +40,5 @@ public sealed class SceneExecutor
     }
 
     private static string BuildMqttTopic(Device d) =>
-        $"smart/home/{d.Location}/{d.Id}";
+        $"smart/{d.Location}/{d.Name.ToLowerInvariant().Replace(" ", "-")}";
 }

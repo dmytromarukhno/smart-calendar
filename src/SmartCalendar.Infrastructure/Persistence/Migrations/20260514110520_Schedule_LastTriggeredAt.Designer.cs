@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using SmartCalendar.Infrastructure.Persistence;
 
@@ -10,9 +11,11 @@ using SmartCalendar.Infrastructure.Persistence;
 namespace SmartCalendar.Infrastructure.Persistence.Migrations
 {
     [DbContext(typeof(SmartCalendarDbContext))]
-    partial class SmartCalendarDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260514110520_Schedule_LastTriggeredAt")]
+    partial class Schedule_LastTriggeredAt
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "8.0.0");

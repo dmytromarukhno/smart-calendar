@@ -18,7 +18,7 @@ public sealed class EventConfiguration : IEntityTypeConfiguration<Event>
             .OnDelete(DeleteBehavior.Cascade);
 
         builder.HasMany(e => e.Schedules)
-            .WithOne()
+            .WithOne(s => s.Event)
             .HasForeignKey(s => s.EventId)
             .OnDelete(DeleteBehavior.Cascade);
     }

@@ -7,6 +7,7 @@ using SmartCalendar.Infrastructure.Mqtt;
 using SmartCalendar.Infrastructure.Persistence;
 using SmartCalendar.Infrastructure.Persistence.Repositories;
 using SmartCalendar.Infrastructure.Scheduling;
+using SmartCalendar.Infrastructure.System;
 
 namespace SmartCalendar.Infrastructure;
 
@@ -25,8 +26,12 @@ public static class DependencyInjection
         services.AddScoped<IEventRepository, EfEventRepository>();
         services.AddScoped<ISceneRepository, EfSceneRepository>();
         services.AddScoped<IDeviceRepository, EfDeviceRepository>();
+        services.AddScoped<IScheduleRepository, EfScheduleRepository>();
 
+        services.AddSingleton<IClock, SystemClock>();
         services.AddSingleton<IMqttPublisher, ConsoleMqttPublisher>();
+
+        services.AddOptions<SchedulerOptions>();
         services.AddHostedService<TimerBasedSceneScheduler>();
 
         return services;
