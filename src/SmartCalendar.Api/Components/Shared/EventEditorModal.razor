@@ -161,8 +161,8 @@
             _end = EditingEvent.EndTime;
             _isRecurring = EditingEvent.IsRecurring;
             _recurrencePattern = EditingEvent.RecurrencePattern;
-            _reminderOffsets = [];
-            _selectedSceneId = "";
+            _reminderOffsets = EditingEvent.ReminderOffsets?.ToList() ?? [];
+            _selectedSceneId = EditingEvent.AttachedSceneId?.ToString() ?? "";
         }
     }
 

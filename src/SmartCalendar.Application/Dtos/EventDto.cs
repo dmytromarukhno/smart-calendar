@@ -7,4 +7,7 @@ public sealed record EventDto(
     DateTime EndTime,
     bool IsRecurring,
     string RecurrencePattern,
-    bool HasScene = false);
+    bool HasScene = false,
+    IReadOnlyList<int>? ReminderOffsets = null,
+    Guid? AttachedSceneId = null,
+    string? AttachedSceneName = null);

@@ -36,7 +36,13 @@ public sealed class EventQueryService
         return events.Select(MapToDto);
     }
 
-    private static EventDto MapToDto(Domain.Entities.Event e) =>
-        new(e.Id, e.Title, e.StartTime, e.EndTime, e.IsRecurring, e.RecurrencePattern,
-            e.Schedules.Any());
+    private static EventDto MapToDto(Domain.Entities.Event e)
+    {
+        var schedule = e.Schedules.FirstOrDefault();
+        return new(e.Id, e.Title, e.StartTime, e.EndTime, e.IsRecurring, e.RecurrencePattern,
+            HasScene: schedule != null,
+            ReminderOffsets: e.Reminders.Select(r => r.OffsetMinutes).ToList().AsReadOnly(),
+            AttachedSceneId: schedule?.SceneId,
+            AttachedSceneName: schedule?.Scene?.Name);
+    }
 }

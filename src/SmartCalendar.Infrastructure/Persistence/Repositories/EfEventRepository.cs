@@ -13,19 +13,19 @@ public sealed class EfEventRepository : IEventRepository
     public async Task<Event?> GetByIdAsync(Guid id, CancellationToken ct = default) =>
         await _db.Events
             .Include(e => e.Reminders)
-            .Include(e => e.Schedules)
+            .Include(e => e.Schedules).ThenInclude(s => s.Scene)
             .FirstOrDefaultAsync(e => e.Id == id, ct);
 
     public async Task<IEnumerable<Event>> GetAllAsync(CancellationToken ct = default) =>
         await _db.Events
             .Include(e => e.Reminders)
-            .Include(e => e.Schedules)
+            .Include(e => e.Schedules).ThenInclude(s => s.Scene)
             .ToListAsync(ct);
 
     public async Task<IEnumerable<Event>> GetByDateAsync(DateTime date, CancellationToken ct = default) =>
         await _db.Events
             .Include(e => e.Reminders)
-            .Include(e => e.Schedules)
+            .Include(e => e.Schedules).ThenInclude(s => s.Scene)
             .Where(e => e.StartTime.Date == date.Date)
             .ToListAsync(ct);
 
@@ -33,7 +33,7 @@ public sealed class EfEventRepository : IEventRepository
         DateTime from, DateTime to, CancellationToken ct = default) =>
         await _db.Events
             .Include(e => e.Reminders)
-            .Include(e => e.Schedules)
+            .Include(e => e.Schedules).ThenInclude(s => s.Scene)
             .Where(e => e.StartTime.Date >= from.Date && e.StartTime.Date <= to.Date)
             .ToListAsync(ct);
 
@@ -53,8 +53,11 @@ public sealed class EfEventRepository : IEventRepository
             _db.Events.Remove(@event);
     }
 
-    public async Task AddScheduleAsync(Schedule schedule, CancellationToken ct = default) =>
-        await _db.Schedules.AddAsync(schedule, ct);
+    public async Task ReplaceScheduleAsync(Guid eventId, Guid sceneId, int triggerOffsetMin, CancellationToken ct = default)
+    {
+        await _db.Schedules.Where(s => s.EventId == eventId).ExecuteDeleteAsync(ct);
+        await _db.Schedules.AddAsync(new Schedule(eventId, sceneId, triggerOffsetMin), ct);
+    }
 
     public async Task ReplaceRemindersAsync(Guid eventId, IReadOnlyList<int> offsets, CancellationToken ct = default)
     {
