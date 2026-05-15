@@ -50,11 +50,13 @@ public sealed class DueSchedulerIntegrationTest : IAsyncLifetime
         db.Schedules.Add(schedule);
         await db.SaveChangesAsync();
 
-        // Act: scheduler fires every 1 s → at least 2 ticks within 3 s
-        await Task.Delay(TimeSpan.FromSeconds(3));
+        // Act: poll up to 10 s — exits as soon as the topic appears (avoids fixed-wait flakiness on CI)
+        var deadline = DateTime.UtcNow.AddSeconds(10);
+        while (!_capturedTopics.Any() && DateTime.UtcNow < deadline)
+            await Task.Delay(200);
 
         // Assert
-        _capturedTopics.Should().NotBeEmpty("scheduler must publish the scene command");
+        _capturedTopics.Should().NotBeEmpty("scheduler must publish the scene command within 10 s");
         _capturedTopics.Should().Contain(t => t.StartsWith("smart/livingroom/"),
             "topic must follow smart/{location}/{device} pattern");
     }

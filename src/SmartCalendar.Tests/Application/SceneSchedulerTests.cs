@@ -36,12 +36,12 @@ public sealed class SceneSchedulerTests
     [Fact]
     public async Task GetDueAsync_WhenTriggerTimeReached_ReturnsDueSchedule()
     {
-        // Event in 2 min, offset = 2 min → triggerTime = UtcNow → due
+        // Event in 2 min, offset = 3 min → triggerTime = UtcNow - 1 min → clearly past due
         using var db = CreateDb();
         var now = DateTime.UtcNow;
         var (scene, @event) = await SeedAsync(db, now.AddMinutes(2));
 
-        var schedule = new Schedule(@event.Id, scene.Id, triggerOffsetMin: 2);
+        var schedule = new Schedule(@event.Id, scene.Id, triggerOffsetMin: 3);
         db.Schedules.Add(schedule);
         await db.SaveChangesAsync();
 
