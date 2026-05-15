@@ -1,8 +1,8 @@
 using FluentAssertions;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
+using Microsoft.AspNetCore.TestHost;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using SmartCalendar.Application.Interfaces;
@@ -78,14 +78,16 @@ internal sealed class SchedulerIntegrationFactory : WebApplicationFactory<Progra
 
     protected override void ConfigureWebHost(IWebHostBuilder builder)
     {
-        builder.ConfigureAppConfiguration((_, cfg) =>
-            cfg.AddInMemoryCollection(new Dictionary<string, string?>
-            {
-                ["ConnectionStrings:DefaultConnection"] = $"Data Source={_dbPath}"
-            }));
-
-        builder.ConfigureServices(services =>
+        builder.ConfigureTestServices(services =>
         {
+            // Replace DbContextOptions so the isolated temp DB is used
+            // (ConfigureAppConfiguration runs too late — AddInfrastructure captures the
+            // connection string at service-registration time before the override is applied)
+            services.RemoveAll<DbContextOptions<SmartCalendarDbContext>>();
+            services.AddDbContext<SmartCalendarDbContext>(
+                options => options.UseSqlite($"Data Source={_dbPath}"),
+                ServiceLifetime.Scoped);
+
             services.Configure<SchedulerOptions>(opts =>
                 opts.TickInterval = TimeSpan.FromSeconds(1));
 
